@@ -7,9 +7,8 @@ const NotificationPage = () => {
     // Fetch notifications (this could be from an API or local state)
     // For demonstration, we're using a static array
     const fetchedNotifications = [
-      { id: 1, message: 'New donation request received.' },
-      { id: 2, message: 'Your donation has been approved.' },
-      { id: 3, message: 'You have a new message in chat.' },
+      { id: 1, message: ' All About the Notification .' },
+      
     ];
 
     // Set the notifications state

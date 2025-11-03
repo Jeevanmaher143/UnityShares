@@ -15,10 +15,7 @@ const Category = () => {
                         <h3>Clothing</h3>
                         <button className="btn">Explore</button>
                     </div>
-                    <div className="category-card">
-                        <h3>Educational</h3>
-                        <button className="btn">Explore</button>
-                    </div>
+                    
                 </div>
             </section>
     </div>
