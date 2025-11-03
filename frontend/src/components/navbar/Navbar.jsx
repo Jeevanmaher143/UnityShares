@@ -10,7 +10,7 @@ export const Navbar = () => {
   const [notifications] = useState([
     { id: 1, message: "New donation request received." },
     { id: 2, message: "Your donation has been approved." },
-    { id: 3, message: "You have a new message in chat." },
+    
   ]);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
@@ -77,16 +77,7 @@ export const Navbar = () => {
               Donate Resource
             </NavLink>
           </li>
-          <li>
-            <NavLink
-              to="/request-resource"
-              onClick={() => handleClickMenu("Request Resource")}
-              className={menu === "Request Resource" ? "active" : ""}
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              Request Resource
-            </NavLink>
-          </li>
+          
           <li>
             <NavLink
               to="/contact-us"

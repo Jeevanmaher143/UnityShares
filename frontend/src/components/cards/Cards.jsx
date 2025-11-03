@@ -58,7 +58,7 @@ const Cards = () => {
           },
         }
       );
-  
+
       if (response.ok) {
         const updatedResources = donatedResources.map((resource) =>
           resource._id === resourceId
@@ -81,29 +81,31 @@ const Cards = () => {
       setRequestMessage("An error occurred while requesting the resource.");
     }
   };
-  
 
   // Donate request function
   const handleDonateResource = async (resourceId) => {
     try {
       const token = localStorage.getItem("authToken"); // JWT token for authentication
-  
-      const response = await fetch(`http://localhost:5000/donate-resource/${resourceId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
+
+      const response = await fetch(
+        `http://localhost:5000/donate-resource/${resourceId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       if (response.ok) {
         const updatedResources = requestedResources.map((resource) =>
           resource._id === resourceId
             ? {
                 ...resource,
                 // Ensure donatedBy is initialized as an array if not already
-                donatedBy: Array.isArray(resource.donatedBy) 
-                  ? [...resource.donatedBy, { userId: currentUserId }] 
+                donatedBy: Array.isArray(resource.donatedBy)
+                  ? [...resource.donatedBy, { userId: currentUserId }]
                   : [{ userId: currentUserId }], // Initialize as array with user
               }
             : resource
@@ -118,7 +120,6 @@ const Cards = () => {
       setRequestMessage("An error occurred while donating the resource.");
     }
   };
-  
 
   // Handle navigating to chat page
   const handleChat = (resourceId) => {
@@ -133,13 +134,13 @@ const Cards = () => {
           (resource) => resource.category === categoryFilter
         );
 
-          // Filter requested resources based on category
+  // Filter requested resources based on category
   const filteredRequestedResources =
     categoryFilter === "all"
       ? requestedResources
       : requestedResources.filter(
-        (resource) => resource.category === categoryFilter
-      );
+          (resource) => resource.category === categoryFilter
+        );
 
   return (
     <div className="cards-section">
@@ -193,7 +194,7 @@ const Cards = () => {
                       Location: {resource.location}
                     </p>
                     <p className="resource-by">
-                      Donated By : {resource.userId.name}
+                      Donated By : {resource?.userId?.name || "Unknown"}
                     </p>
 
                     {isRequestedByCurrentUser ? (
@@ -234,82 +235,83 @@ const Cards = () => {
       )}
       {/* Show Requested Resources */}
       {resourceType === "requested" && (
-  <>
-    <div className="dropdown">
-      <select
-        value={categoryFilter}
-        onChange={(e) => setCategoryFilter(e.target.value)}
-      >
-        <option value="all">All Categories</option>
-        <option value="food">Food</option>
-        <option value="clothes">Clothes</option>
-        <option value="education">Education</option>
-      </select>
-    </div>
+        <>
+          <div className="dropdown">
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+            >
+              <option value="all">All Categories</option>
+              <option value="food">Food</option>
+              <option value="clothes">Clothes</option>
+            </select>
+          </div>
 
-    <div className="card-container">
-      {filteredRequestedResources.length > 0 ? (
-        filteredRequestedResources.map((resource) => {
-          const isRequestedByCurrentUser = Array.isArray(resource.requestedBy) && 
-            resource.requestedBy.some((request) => request.userId === currentUserId);
-          
-          return (
-            <div key={resource._id} className="card">
-              <img
-                src={`http://localhost:5000${resource.image[0]}`}
-                alt={resource.resourceName}
-                className="card-image"
-              />
-              <h3>{resource.resourceName}</h3>
-              <p className="resource-quantity">
-                Quantity: {resource.quantity}
-              </p>
-              <p className="resource-description">
-                Description : {resource.description}
-              </p>
-              <p className="resource-location">
-                Location: {resource.location}
-              </p>
-              <p className="resource-by">
-                Requested By : {resource.userId.name}
-              </p>
-              {isRequestedByCurrentUser ? (
-                <>
-                  <button
-                    className="requested-button"
-                    disabled
-                    style={{ marginRight: "10px" }}
-                  >
-                    Requested
-                  </button>
-                  <button
-                    className="chat-button"
-                    onClick={() => handleChat(resource._id)}
-                  >
-                    Chat
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => handleDonateResource(resource._id)}
-                  className="request-button"
-                >
-                  Donate
-                </button>
-              )}
-            </div>
-          );
-        })
-      ) : (
-        <p>No requested resources available.</p>
+          <div className="card-container">
+            {filteredRequestedResources.length > 0 ? (
+              filteredRequestedResources.map((resource) => {
+                const isRequestedByCurrentUser =
+                  Array.isArray(resource.requestedBy) &&
+                  resource.requestedBy.some(
+                    (request) => request.userId === currentUserId
+                  );
+
+                return (
+                  <div key={resource._id} className="card">
+                    <img
+                      src={`http://localhost:5000${resource.image[0]}`}
+                      alt={resource.resourceName}
+                      className="card-image"
+                    />
+                    <h3>{resource.resourceName}</h3>
+                    <p className="resource-quantity">
+                      Quantity: {resource.quantity}
+                    </p>
+                    <p className="resource-description">
+                      Description : {resource.description}
+                    </p>
+                    <p className="resource-location">
+                      Location: {resource.location}
+                    </p>
+                    <p className="resource-by">
+                      Requested By : {resource.userId.name}
+                    </p>
+                    {isRequestedByCurrentUser ? (
+                      <>
+                        <button
+                          className="requested-button"
+                          disabled
+                          style={{ marginRight: "10px" }}
+                        >
+                          Requested
+                        </button>
+                        <button
+                          className="chat-button"
+                          onClick={() => handleChat(resource._id)}
+                        >
+                          Chat
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => handleDonateResource(resource._id)}
+                        className="request-button"
+                      >
+                        Donate
+                      </button>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <p>No requested resources available.</p>
+            )}
+          </div>
+          {requestMessage && (
+            <p className="request-message">{requestMessage}</p>
+          )}
+        </>
       )}
-    </div>
-    {requestMessage && (
-      <p className="request-message">{requestMessage}</p>
-    )}
-  </>
-)}
-
     </div>
   );
 };

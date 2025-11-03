@@ -19,13 +19,7 @@ const Header = () => {
           >
             Donate Resources
           </button>
-          <button 
-            onClick={() => navigate("/request-resource")} 
-            className="btn" 
-            aria-label="Request resources"
-          >
-            Request Resource
-          </button>
+          
         </div>
       </section>
     </header>
