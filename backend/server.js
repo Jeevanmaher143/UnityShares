@@ -135,31 +135,6 @@ io.on("connection", (socket) => {
 });
 
 
-
-
-
-
-// app.get('/chat/:userId', async (req, res) => {
-//   const userId = req.params.userId;
-//   const currentUserId = req.user._id; // Assuming user is authenticated with JWT and their ID is available
-
-//   try {
-//     // Fetch messages from the database where either sender or receiver is the current user
-//     const messages = await Message.find({
-//       $or: [
-//         { sender: currentUserId, receiver: userId },
-//         { sender: userId, receiver: currentUserId }
-//       ]
-//     });
-
-//     res.json({ messages });
-//   } catch (error) {
-//     console.error('Error fetching messages:', error);
-//     res.status(500).send('Error fetching messages');
-//   }
-// });
-
-
 // POST route for donation
 app.post("/donate", upload.array("images", 5), async (req, res) => {
   try {
@@ -382,58 +357,6 @@ app.put(
   }
 );
 
-
-
-// Route to handle storing requested resources from donation
-// app.post("/request-resource", upload.array("images", 5), async (req, res) => {
-//   try {
-//     console.log("Received Files:", req.files); // Log received files for debugging
-
-//     // Extract data from the request body
-//     const {
-//       resourceName,
-//       quantity,
-//       category,
-//       description,
-//       location,
-//       userId,
-//       customCategory,
-//     } = req.body;
-
-//     // Ensure at least one file is uploaded
-//     if (!req.files || req.files.length === 0) {
-//       return res.status(400).json({ message: "No files uploaded" });
-//     }
-
-//     // Map the file paths for the uploaded images
-//     const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
-//     console.log("Image Paths:", imagePaths); // Log the paths for debugging
-
-//     // Create a new RequestedResource document
-//     const newRequestedResource = new RequestedResource({
-//       resourceName,
-//       quantity,
-//       category,
-//       customCategory: category === "others" ? customCategory : undefined, // Store custom category if specified
-//       description,
-//       location,
-//       image: imagePaths, // Store the image paths
-//       userId, // Associate with the user who requested the resource
-//     });
-
-//     // Save the new requested resource to the database
-//     await newRequestedResource.save();
-
-//     // Return success response
-//     res.status(201).json({
-//       message: "Request successful",
-//       requestedResource: newRequestedResource,
-//     });
-//   } catch (error) {
-//     console.error("Error in Requesting Resource Route:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// });
 
 
 

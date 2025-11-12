@@ -15,9 +15,9 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
   profilePic: {
-     type: String
-     , default: '' 
-    }, // Add this line
+    type: String,
+    default: "",
+  },
 });
 
 module.exports = mongoose.model("User", UserSchema);

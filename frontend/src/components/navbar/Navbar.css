@@ -63,7 +63,8 @@ img{
 .navbar .navbar-left .search .search-icon{
     position: absolute;
     top: 24px;
-    right: 420px;
+    right: 455px;
+    padding-top: 1px;
 }
 
 .navbar .navbar-left .search .search-icon img{

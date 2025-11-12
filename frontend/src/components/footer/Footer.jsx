@@ -14,10 +14,10 @@ const Footer = () => {
         </div>
 
         <div className="social-media">
-          <a href="https://www.facebook.com/profile.php?id=100025377671917" target="_blank" rel="noopener noreferrer">
+          <a href="# " target="_blank" rel="noopener noreferrer">
             <img src={assets.facebook} alt="Facebook" />
           </a>
-          <a href="https://twitter.com/your-profile" target="_blank" rel="noopener noreferrer">
+          <a href="# " target="_blank" rel="noopener noreferrer">
             <img src={assets.x} alt="Twitter" />
           </a>
           <a href="#" target="_blank" rel="noopener noreferrer">
