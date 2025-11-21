@@ -12,6 +12,8 @@ function UserProfile() {
   const [donatedResources, setDonatedResources] = useState([]);
   const [donorsForRequestedResources, setDonorsForRequestedResources] = useState([]);
   const [requestersForDonatedResources, setRequestersForDonatedResources] = useState([]);
+  const [acceptedRequests, setAcceptedRequests] = useState([]);
+  const [rejectedRequests, setRejectedRequests] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Add loading state
   const userId = localStorage.getItem('user_id');
@@ -56,7 +58,9 @@ function UserProfile() {
           // Fetch donors for requested resources and requesters for donated resources
           fetchDonorsForRequestedResources(data.requestedResources);
           fetchRequestersForDonatedResources(data.donatedResources);
-  
+          fetchAcceptedRequests();
+          fetchRejectedRequests();
+
           // Fetch the resourceId for requested or donated resources
           if (data.donatedResources.length > 0) {
             const firstResourceId = data.donatedResources[0]._id; // Example: Fetch the first resourceId
@@ -149,9 +153,10 @@ function UserProfile() {
           });
           const data = await response.json();
           console.log("Requesters Data:", data); // Check the structure of the response
-  
-          return { 
-            resourceName: resource.resourceName, 
+
+          return {
+            resourceName: resource.resourceName,
+            resourceId: resource._id,
             requesters: data.requesters || []  // Ensure requestDate exists
           };
         })
@@ -161,13 +166,37 @@ function UserProfile() {
       console.error('Error fetching requesters for donated resources:', error);
     }
   };
+
+  const fetchAcceptedRequests = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/accepted/${userId}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      const data = await response.json();
+      setAcceptedRequests(data);
+    } catch (error) {
+      console.error('Error fetching accepted requests:', error);
+    }
+  };
+
+  const fetchRejectedRequests = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/rejected/${userId}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      const data = await response.json();
+      setRejectedRequests(data);
+    } catch (error) {
+      console.error('Error fetching rejected requests:', error);
+    }
+  };
   
   
   
 
   const handleAccept = async (resourceId, requesterId) => {
     try {
-        const response = await fetch(`http://localhost:5000/accept-request/${id}`, {
+        const response = await fetch(`http://localhost:5000/accept-request/${resourceId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -178,10 +207,19 @@ function UserProfile() {
 
         if (response.ok) {
             alert('Request accepted and stored in ResourceAccepted schema!');
-             // Remove the resource from the requested resources after accepting it
-      setRequestedResources((prevResources) => 
-        prevResources.filter((resource) => resource._id !== resourceId)
-      );
+            // Remove the requester from the list after accepting
+            setRequestersForDonatedResources((prev) =>
+              prev.map((resource) =>
+                resource.resourceId === resourceId
+                  ? {
+                      ...resource,
+                      requesters: resource.requesters.filter((req) => req._id !== requesterId),
+                    }
+                  : resource
+              )
+            );
+            // Refresh accepted requests
+            fetchAcceptedRequests();
         } else {
             alert('Failed to accept request.');
         }
@@ -193,7 +231,7 @@ function UserProfile() {
 
 const handleReject = async (resourceId, requesterId) => {
     try {
-        const response = await fetch(`http://localhost:5000/reject-request/${id}`, {
+        const response = await fetch(`http://localhost:5000/reject-request/${resourceId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -204,10 +242,19 @@ const handleReject = async (resourceId, requesterId) => {
 
         if (response.ok) {
             alert('Request rejected and stored in ResourceRejected schema!');
-             // Remove the resource from the requested resources after rejecting it
-      setRequestedResources((prevResources) => 
-        prevResources.filter((resource) => resource._id !== resourceId)
-      );
+            // Remove the requester from the list after rejecting
+            setRequestersForDonatedResources((prev) =>
+              prev.map((resource) =>
+                resource.resourceId === resourceId
+                  ? {
+                      ...resource,
+                      requesters: resource.requesters.filter((req) => req._id !== requesterId),
+                    }
+                  : resource
+              )
+            );
+            // Refresh rejected requests
+            fetchRejectedRequests();
         } else {
             alert('Failed to reject request.');
         }
@@ -218,47 +265,7 @@ const handleReject = async (resourceId, requesterId) => {
 
   
 
-const handleAcceptFetch = async (resourceId, requesterId) => {
-  try {
-    const response = await fetch(`http://localhost:5000/accept-request/${id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${authToken}`,
-      },
-      body: JSON.stringify({ requesterId }),
-    });
 
-    if (response.ok) {
-      alert('Request accepted and stored in ResourceAccepted schema!');
-    } else {
-      alert('Failed to accept request.');
-    }
-  } catch (error) {
-    console.error('Error accepting request:', error);
-  }
-};
-
-const handleRejectFetch = async (resourceId, requesterId) => {
-  try {
-    const response = await fetch(`http://localhost:5000/reject-request/${id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${authToken}`,
-      },
-      body: JSON.stringify({ requesterId }),
-    });
-
-    if (response.ok) {
-      alert('Request rejected and stored in ResourceRejected schema!');
-    } else {
-      alert('Failed to reject request.');
-    }
-  } catch (error) {
-    console.error('Error rejecting request:', error);
-  }
-};
   
 
   const handleChatClick = async (donorId, donorName) => {
@@ -366,8 +373,8 @@ const handleRejectFetch = async (resourceId, requesterId) => {
   <select onChange={(e) => setSelectedView(e.target.value)} value={selectedView}>
     <option value="donors">Donors for Requested Resources</option>
     <option value="requesters">Requesters for Donated Resources</option>
-    <option value="Accept">Accepted Resources</option>
-    <option value="reject">Rejected Resource</option>
+    <option value="accepted">Accepted Resources</option>
+    <option value="rejected">Rejected Resources</option>
   </select>
 </div>
 
@@ -413,7 +420,7 @@ const handleRejectFetch = async (resourceId, requesterId) => {
               resource.requesters.map((requester) => (
                 <div key={requester._id} className="requester-card">
                   <p>Name: {requester.name}</p>
-                  <p>Requested On: {new Date(resource.requestDate).toLocaleString()}</p>
+                  <p>Requested On: {new Date(requester.requestedAt).toLocaleString()}</p>
                   <button onClick={() => handleAccept(resource._id, requester._id)} className="accept-button">
                     Accept
                   </button>
