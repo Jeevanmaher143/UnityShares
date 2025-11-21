@@ -1,3 +1,4 @@
+// models/Donation.js
 const mongoose = require("mongoose");
 
 const donationSchema = new mongoose.Schema({
@@ -7,17 +8,28 @@ const donationSchema = new mongoose.Schema({
   customCategory: { type: String },
   description: { type: String, required: true },
   location: { type: String, required: true },
-  image: [{ type: String }], // Store image paths (URLs if using external storage)
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Reference to the user who donated
+  image: [{ type: String }], // array of image paths
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+
   requestedBy: [
     {
       userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      status: {
+        type: String,
+        enum: ["pending", "accepted", "rejected"],
+        default: "pending",
+      },
       requestedAt: { type: Date, default: Date.now },
     },
   ],
+
+  finalStatus: {
+    type: String,
+    enum: ["available", "in_process", "donated"],
+    default: "available",
+  },
+
   createdAt: { type: Date, default: Date.now },
 });
 
-const Donation = mongoose.model("Donation", donationSchema);
-
-module.exports = Donation;
+module.exports = mongoose.model("Donation", donationSchema);
